@@ -64,13 +64,15 @@ export default function Header() {
           </nav>
 
           <div className="hidden md:flex items-center space-x-4">
-            <Link
+            {/* <Link
               href="#"
               className="text-sm font-medium hover:text-primary transition-colors"
             >
               Sign In
-            </Link>
-            <Button>Start Renting</Button>
+            </Link> */}
+            <Button className="rounded" asChild>
+              <Link href="#">Start Renting</Link>
+            </Button>
           </div>
 
           {/* Mobile Menu Button */}
@@ -111,13 +113,15 @@ export default function Header() {
             </Link>
 
             <div className="pt-2 flex flex-col space-y-3">
-              <Link
+              {/* <Link
                 href="#"
                 className="text-sm font-medium py-2 hover:text-primary transition-colors"
               >
                 Sign In
-              </Link>
-              <Button className="w-full">Get Started</Button>
+              </Link> */}
+              <Button className="w-full" asChild>
+                <Link href="#">Start Renting</Link>
+              </Button>
             </div>
           </div>
         </div>
