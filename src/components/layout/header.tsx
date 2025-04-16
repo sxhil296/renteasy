@@ -4,10 +4,19 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Menu, X, ShoppingBag } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import { cn, setUserInSessionStorage } from "@/lib/utils";
 import Container from "./container";
+import { useRouter, useSearchParams } from "next/navigation";
+import { setUser } from "@/redux/features/users/userSlice";
+import { useAppDispatch } from "@/redux/hook";
 
 export default function Header() {
+  const searchParams = useSearchParams();
+  const loggedInUser = searchParams.get("user");
+  console.log("Logged In User: ", loggedInUser);
+  const dispatch = useAppDispatch();
+  const router = useRouter();
+
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -25,6 +34,14 @@ export default function Header() {
       window.removeEventListener("scroll", handleScroll);
     };
   }, []);
+
+  useEffect(() => {
+    if (loggedInUser) {
+      dispatch(setUser(JSON.parse(loggedInUser)));
+      setUserInSessionStorage(JSON.parse(loggedInUser));
+      router.replace("/");
+    }
+  }, [loggedInUser, dispatch]);
 
   return (
     <header
@@ -71,7 +88,11 @@ export default function Header() {
               Sign In
             </Link> */}
             <Button className="rounded" asChild>
-              <Link href="#">Start Renting</Link>
+              <Link
+                href={`https://accounts.google.com/o/oauth2/v2/auth?redirect_uri=${process.env.NEXT_PUBLIC_REDIRECT_UI}&client_id=${process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID}&access_type=offline&response_type=code&prompt=consent&scope=https://www.googleapis.com/auth/userinfo.profile%20https://www.googleapis.com/auth/userinfo.email`}
+              >
+                Start Renting
+              </Link>
             </Button>
           </div>
 
@@ -120,7 +141,11 @@ export default function Header() {
                 Sign In
               </Link> */}
               <Button className="w-full" asChild>
-                <Link href="#">Start Renting</Link>
+                <Link
+                  href={`https://accounts.google.com/o/oauth2/v2/auth?redirect_uri=${process.env.NEXT_PUBLIC_REDIRECT_UI}&client_id=${process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID}&access_type=offline&response_type=code&prompt=consent&scope=https://www.googleapis.com/auth/userinfo.profile%20https://www.googleapis.com/auth/userinfo.email`}
+                >
+                  Start Renting
+                </Link>
               </Button>
             </div>
           </div>
