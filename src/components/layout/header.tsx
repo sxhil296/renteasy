@@ -4,21 +4,25 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Menu, X, ShoppingBag } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { cn, setUserInSessionStorage } from "@/lib/utils";
+import {
+  cn,
+  getUserFromSessionStorage,
+  setUserInSessionStorage,
+} from "@/lib/utils";
 import Container from "./container";
 import { useRouter, useSearchParams } from "next/navigation";
 import { setUser } from "@/redux/features/users/userSlice";
 import { useAppDispatch } from "@/redux/hook";
+import Image from "next/image";
 
 export default function Header() {
   const searchParams = useSearchParams();
   const loggedInUser = searchParams.get("user");
-  console.log("Logged In User: ", loggedInUser);
   const dispatch = useAppDispatch();
   const router = useRouter();
-
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const googleLink = `https://accounts.google.com/o/oauth2/v2/auth?redirect_uri=${process.env.NEXT_PUBLIC_REDIRECT_UI}&client_id=${process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID}&access_type=offline&response_type=code&prompt=consent&scope=https://www.googleapis.com/auth/userinfo.profile%20https://www.googleapis.com/auth/userinfo.email`;
 
   useEffect(() => {
     const handleScroll = () => {
@@ -42,6 +46,13 @@ export default function Header() {
       router.replace("/");
     }
   }, [loggedInUser, dispatch]);
+
+  const user = getUserFromSessionStorage();
+  console.log("User from session storage: ", user);
+
+  
+
+
 
   return (
     <header
@@ -73,7 +84,7 @@ export default function Header() {
               How It Works
             </Link>
             <Link
-              href="#"
+              href="add-product"
               className="text-sm font-medium hover:text-primary transition-colors"
             >
               Add Product
@@ -81,19 +92,25 @@ export default function Header() {
           </nav>
 
           <div className="hidden md:flex items-center space-x-4">
-            {/* <Link
-              href="#"
-              className="text-sm font-medium hover:text-primary transition-colors"
-            >
-              Sign In
-            </Link> */}
-            <Button className="rounded" asChild>
+            {!user && (
+              <Button className="rounded" asChild>
+                <Link href={googleLink}>Start Renting</Link>
+              </Button>
+            )}
+            {user && (
               <Link
-                href={`https://accounts.google.com/o/oauth2/v2/auth?redirect_uri=${process.env.NEXT_PUBLIC_REDIRECT_UI}&client_id=${process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID}&access_type=offline&response_type=code&prompt=consent&scope=https://www.googleapis.com/auth/userinfo.profile%20https://www.googleapis.com/auth/userinfo.email`}
+                href="/dashboard"
+                className="text-sm font-medium hover:text-primary transition-colors"
               >
-                Start Renting
+                <Image
+                  src={user?.picture}
+                  width={30}
+                  height={30}
+                  alt={`${user?.name} pfp`}
+                  className="rounded-full border border-green-500 cursor-pointer"
+                />
               </Link>
-            </Button>
+            )}
           </div>
 
           {/* Mobile Menu Button */}
@@ -127,26 +144,32 @@ export default function Header() {
               How It Works
             </Link>
             <Link
-              href="#"
+              href="add-product"
               className="text-sm font-medium py-2 hover:text-primary transition-colors"
             >
               Add Prodcut
             </Link>
 
             <div className="pt-2 flex flex-col space-y-3">
-              {/* <Link
-                href="#"
-                className="text-sm font-medium py-2 hover:text-primary transition-colors"
-              >
-                Sign In
-              </Link> */}
-              <Button className="w-full" asChild>
+              {!user && (
+                <Button className="rounded" asChild>
+                  <Link href={googleLink}>Start Renting</Link>
+                </Button>
+              )}
+              {user && (
                 <Link
-                  href={`https://accounts.google.com/o/oauth2/v2/auth?redirect_uri=${process.env.NEXT_PUBLIC_REDIRECT_UI}&client_id=${process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID}&access_type=offline&response_type=code&prompt=consent&scope=https://www.googleapis.com/auth/userinfo.profile%20https://www.googleapis.com/auth/userinfo.email`}
+                  href="/dashboard"
+                  className="text-sm font-medium hover:text-primary transition-colors"
                 >
-                  Start Renting
+                  <Image
+                    src={user?.picture}
+                    width={30}
+                    height={30}
+                    alt={`${user?.name} pfp`}
+                    className="rounded-full border border-green-500 cursor-pointer"
+                  />
                 </Link>
-              </Button>
+              )}
             </div>
           </div>
         </div>
